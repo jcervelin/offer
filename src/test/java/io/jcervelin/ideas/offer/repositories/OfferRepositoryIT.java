@@ -88,7 +88,7 @@ public class OfferRepositoryIT {
         target.save(ivoryPianoValid);
         target.save(ivoryPianoExpired);
 
-        List<Offer> result = target.findValidOffers(now());
+        final List<Offer> result = target.findValidOffers(now());
 
         Assertions.assertThat(result.size()).isEqualTo(1);
 
@@ -120,7 +120,7 @@ public class OfferRepositoryIT {
         target.save(ivoryPianoExpiredOneDayAgo);
 
         // WHEN the method getOffers is called the return should be empty, because there is no valid offer
-        List<Offer> result = target.findValidOffers(now());
+        final List<Offer> result = target.findValidOffers(now());
 
         Assertions.assertThat(result.size()).isEqualTo(0);
 
@@ -131,6 +131,9 @@ public class OfferRepositoryIT {
         // GIVEN a empty database
 
         // WHEN the method getOffers is called the return should be empty, because there is no valid offer
+        final List<Offer> result = target.findValidOffers(now());
+
+        Assertions.assertThat(result.size()).isEqualTo(0);
 
     }
 
