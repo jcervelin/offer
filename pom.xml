@@ -34,6 +34,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -108,16 +114,13 @@
                                     </limits>
                                     <excludes>
                                         <!-- Application -->
-                                        <exclude>io.jcervelin.fruitshop.cart.CartApplication</exclude>
+                                        <exclude>io.jcervelin.ideas.offer.OfferApplication</exclude>
 
                                         <!-- Configuration Class -->
-                                        <exclude>io.jcervelin.fruitshop.cart.config.*</exclude>
+                                        <exclude>io.jcervelin.ideas.offer.config.*</exclude>
 
                                         <!-- Domains Class -->
-                                        <exclude>io.jcervelin.fruitshop.cart.domains.*</exclude>
-
-                                        <!-- Gateways Class -->
-                                        <exclude>io.jcervelin.fruitshop.cart.gateways.*</exclude>
+                                        <exclude>io.jcervelin.ideas.offer.models.*</exclude>
                                     </excludes>
                                 </rule>
                             </rules>
