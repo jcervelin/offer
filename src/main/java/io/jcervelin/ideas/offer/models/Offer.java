@@ -17,10 +17,12 @@ import java.time.LocalDate;
 @Document(collection = "offers")
 public class Offer {
     @Id
-    private ObjectId sku;
+    private ObjectId id;
     private String name;
     private double price;
     private double offerPrice;
     private LocalDate startOffer;
     private LocalDate endOffer;
+    private String currency;
+    private String description;
 }

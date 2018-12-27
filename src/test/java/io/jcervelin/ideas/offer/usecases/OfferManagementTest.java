@@ -5,6 +5,7 @@ import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import org.assertj.core.api.Assertions;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,10 +19,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static br.com.six2six.fixturefactory.Fixture.from;
+import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
+import static io.jcervelin.ideas.offer.templates.OfferTemplate.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferManagementTest {
+
+    private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
+
+    @BeforeClass
+    public static void setup() {
+        loadTemplates(TEMPLATE_PACKAGE);
+    }
 
     @InjectMocks
     private OfferManagement target;
@@ -45,13 +56,7 @@ public class OfferManagementTest {
 
     @Test
     public void savePersistDataAndDoNotAlterTheContent() {
-        final Offer ivoryPiano = Offer.builder()
-                .name("Ivory Piano")
-                .price(100.0)
-                .offerPrice(70.0)
-                .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.of(2018, 12, 10))
-                .build();
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
 
         doReturn(ivoryPiano).when(offerRepository).save(any(Offer.class));
 
@@ -85,21 +90,9 @@ public class OfferManagementTest {
     @Test
     public void getOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
 
-        final Offer ivoryPiano = Offer.builder()
-                .name("Ivory Piano")
-                .price(100.0)
-                .offerPrice(70.0)
-                .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.of(2018, 12, 10))
-                .build();
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
 
-        final Offer cabinet = Offer.builder()
-                .name("Wooden Cabinet")
-                .price(60.0)
-                .offerPrice(40.0)
-                .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.of(2018, 12, 10))
-                .build();
+        final Offer cabinet = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
 
         doReturn(Arrays.asList(ivoryPiano,cabinet)).when(offerRepository).findValidOffers(any(LocalDate.class));
 
