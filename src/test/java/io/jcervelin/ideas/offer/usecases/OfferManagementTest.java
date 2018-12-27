@@ -2,7 +2,7 @@ package io.jcervelin.ideas.offer.usecases;
 
 import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
-import io.jcervelin.ideas.offer.models.OfferErrorException;
+import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +54,17 @@ public class OfferManagementTest {
         final Offer result = target.save(ivoryPiano);
 
         Assertions.assertThat(ivoryPiano).isEqualToIgnoringGivenFields(result,"id");
+    }
+
+    @Test
+    public void getOffersShouldReturnOfferErrorException() {
+
+        doThrow(new RuntimeException("Mongo is outage.")).when(offerRepository).findValidOffers(any(LocalDate.class));
+
+        thrown.expect(OfferErrorException.class);
+        thrown.expectMessage("The offer could not be found. [Mongo is outage.]");
+
+        target.getValidOffers();
     }
 
 }
