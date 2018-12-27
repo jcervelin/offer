@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.Mockito.doReturn;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
 public class OfferRepositoryIT {
@@ -61,5 +63,62 @@ public class OfferRepositoryIT {
         Assertions.assertThat(all.get(0).getSku()).isNotEqualTo(all.get(1).getSku());
 
     }
+
+    @Test
+    public void getOffersShouldReturnOnlyNonExpiredOffers() {
+        // GIVEN 2 pianos, one expired and another valid, saved in the database
+
+        final Offer ivoryPianoValid = Offer.builder()
+                .name("Ivory Piano")
+                .price(100.0)
+                .offerPrice(70.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.now().plusDays(1))
+                .build();
+
+        final Offer ivoryPianoExpired = Offer.builder()
+                .name("Ivory Piano Expired")
+                .price(100.0)
+                .offerPrice(80.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.now().minusDays(1))
+                .build();
+
+        // WHEN the method getOffers is called only the valid offer should return
+
+    }
+
+    @Test
+    public void getOffersShouldReturnEmptyWhenAllOffersAreExpired() {
+        // GIVEN 2 pianos, one expired and another valid, saved in the database
+
+        final Offer ivoryPianoExpiredTwoDaysAgo = Offer.builder()
+                .name("Ivory Piano")
+                .price(100.0)
+                .offerPrice(70.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.now().minusDays(2))
+                .build();
+
+        final Offer ivoryPianoExpiredOneDayAgo = Offer.builder()
+                .name("Ivory Piano")
+                .price(100.0)
+                .offerPrice(80.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.now().minusDays(1))
+                .build();
+
+        // WHEN the method getOffers is called the return should be empty, because there is no valid offer
+
+    }
+
+    @Test
+    public void getOffersShouldReturnEmptyBecauseThereIsNoData() {
+        // GIVEN a empty database
+
+        // WHEN the method getOffers is called the return should be empty, because there is no valid offer
+
+    }
+
 
 }
