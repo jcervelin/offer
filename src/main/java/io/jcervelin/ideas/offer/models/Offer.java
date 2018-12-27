@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@Document
+@Document(collection = "offers")
 public class Offer {
     @Id
     private ObjectId sku;

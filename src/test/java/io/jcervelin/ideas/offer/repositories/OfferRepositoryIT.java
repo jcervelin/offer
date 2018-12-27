@@ -1,5 +1,6 @@
 package io.jcervelin.ideas.offer.repositories;
 
+import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package io.jcervelin.ideas.offer.repositories;
+package io.jcervelin.ideas.offer.gateways.repositories;
 
 import io.jcervelin.ideas.offer.models.Offer;
 import org.bson.types.ObjectId;
