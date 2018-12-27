@@ -116,7 +116,13 @@ public class OfferRepositoryIT {
                 .endOffer(now().minusDays(1))
                 .build();
 
+        target.save(ivoryPianoExpiredTwoDaysAgo);
+        target.save(ivoryPianoExpiredOneDayAgo);
+
         // WHEN the method getOffers is called the return should be empty, because there is no valid offer
+        List<Offer> result = target.findValidOffers(now());
+
+        Assertions.assertThat(result.size()).isEqualTo(0);
 
     }
 
