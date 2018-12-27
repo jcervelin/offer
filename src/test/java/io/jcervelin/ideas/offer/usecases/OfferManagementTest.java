@@ -3,6 +3,7 @@ package io.jcervelin.ideas.offer.usecases;
 import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
+import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
@@ -67,4 +69,14 @@ public class OfferManagementTest {
         target.getValidOffers();
     }
 
+    @Test
+    public void getOffersShouldReturnNoDataFoundException() {
+
+        doReturn(Collections.emptyList()).when(offerRepository).findValidOffers(any(LocalDate.class));
+
+        thrown.expect(OfferNotFoundException.class);
+        thrown.expectMessage("No data found.");
+
+        target.getValidOffers();
+    }
 }
