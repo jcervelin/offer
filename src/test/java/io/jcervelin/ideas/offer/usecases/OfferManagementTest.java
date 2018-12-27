@@ -14,7 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -78,5 +80,33 @@ public class OfferManagementTest {
         thrown.expectMessage("No data found.");
 
         target.getValidOffers();
+    }
+
+    @Test
+    public void getOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
+
+        final Offer ivoryPiano = Offer.builder()
+                .name("Ivory Piano")
+                .price(100.0)
+                .offerPrice(70.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.of(2018, 12, 10))
+                .build();
+
+        final Offer cabinet = Offer.builder()
+                .name("Wooden Cabinet")
+                .price(60.0)
+                .offerPrice(40.0)
+                .startOffer(LocalDate.of(2018, 12, 1))
+                .endOffer(LocalDate.of(2018, 12, 10))
+                .build();
+
+        doReturn(Arrays.asList(ivoryPiano,cabinet)).when(offerRepository).findValidOffers(any(LocalDate.class));
+
+        final List<Offer> result = target.getValidOffers();
+
+        Assertions.assertThat(result.size()).isEqualTo(2);
+        Assertions.assertThat(result).containsExactlyInAnyOrder(ivoryPiano,cabinet);
+
     }
 }
