@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.Mockito.doReturn;
+import static java.time.LocalDate.now;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
@@ -73,7 +73,7 @@ public class OfferRepositoryIT {
                 .price(100.0)
                 .offerPrice(70.0)
                 .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.now().plusDays(1))
+                .endOffer(now().plusDays(1))
                 .build();
 
         final Offer ivoryPianoExpired = Offer.builder()
@@ -81,10 +81,18 @@ public class OfferRepositoryIT {
                 .price(100.0)
                 .offerPrice(80.0)
                 .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.now().minusDays(1))
+                .endOffer(now().minusDays(1))
                 .build();
 
         // WHEN the method getOffers is called only the valid offer should return
+        target.save(ivoryPianoValid);
+        target.save(ivoryPianoExpired);
+
+        List<Offer> result = target.findValidOffers(now());
+
+        Assertions.assertThat(result.size()).isEqualTo(1);
+
+        Assertions.assertThat(result.get(0)).isEqualToIgnoringGivenFields(ivoryPianoValid,"id");
 
     }
 
@@ -97,7 +105,7 @@ public class OfferRepositoryIT {
                 .price(100.0)
                 .offerPrice(70.0)
                 .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.now().minusDays(2))
+                .endOffer(now().minusDays(2))
                 .build();
 
         final Offer ivoryPianoExpiredOneDayAgo = Offer.builder()
@@ -105,7 +113,7 @@ public class OfferRepositoryIT {
                 .price(100.0)
                 .offerPrice(80.0)
                 .startOffer(LocalDate.of(2018, 12, 1))
-                .endOffer(LocalDate.now().minusDays(1))
+                .endOffer(now().minusDays(1))
                 .build();
 
         // WHEN the method getOffers is called the return should be empty, because there is no valid offer
