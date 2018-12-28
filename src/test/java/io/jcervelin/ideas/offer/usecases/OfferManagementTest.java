@@ -52,59 +52,75 @@ public class OfferManagementTest {
 
     @Test
     public void saveShouldReturnOfferErrorException() {
-
+        // GIVEN a RuntimeException
         doThrow(new RuntimeException("Mongo is outage.")).when(offerRepository).save(any(Offer.class));
 
         thrown.expect(OfferErrorException.class);
         thrown.expectMessage("The offer could not be saved. [Mongo is outage.]");
 
+        // WHEN the method save is called
         target.save(new Offer());
+
+        // THEN it should return OfferErrorException
     }
 
     @Test
     public void savePersistDataAndDoNotAlterTheContent() {
+        // GIVEN an offer
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
 
         doReturn(ivoryPiano).when(offerRepository).save(any(Offer.class));
 
+        // WHEN the method is called
         final Offer result = target.save(ivoryPiano);
 
+        // THEN it should the saved offer with an id
         Assertions.assertThat(ivoryPiano).isEqualToIgnoringGivenFields(result,"id");
+        Assertions.assertThat(ivoryPiano.getId()).isNotNull();
     }
 
     @Test
     public void getOffersShouldReturnOfferErrorException() {
-
+        // GIVEN a problem in the database
         doThrow(new RuntimeException("Mongo is outage.")).when(offerRepository).findValidOffers(any(LocalDate.class));
 
         thrown.expect(OfferErrorException.class);
         thrown.expectMessage("The offer could not be found. [Mongo is outage.]");
 
+        // WHEN the method is called
         target.getValidOffers();
+
+        // THEN it should return OfferErrorException
     }
 
     @Test
     public void getOffersShouldReturnNoDataFoundException() {
-
+        // GIVEN an empty database
         doReturn(Collections.emptyList()).when(offerRepository).findValidOffers(any(LocalDate.class));
 
         thrown.expect(OfferNotFoundException.class);
         thrown.expectMessage("No data found.");
 
+        //WHEN the method is called
         target.getValidOffers();
+
+        // THEN it should return NoDataFoundException
     }
 
     @Test
     public void getOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
-
+        // GIVEN two offer. One expired and the other valid
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
-
         final Offer cabinet = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
 
         doReturn(Arrays.asList(ivoryPiano,cabinet)).when(offerRepository).findValidOffers(any(LocalDate.class));
 
+        // WHEN the method is called
         final List<Offer> result = target.getValidOffers();
 
+        // THEN it should return everything, because it's not this method responsibility
+        // filtering expired and non expired methods
+        // this is the database responsibility.
         Assertions.assertThat(result.size()).isEqualTo(2);
         Assertions.assertThat(result).containsExactlyInAnyOrder(ivoryPiano,cabinet);
     }
