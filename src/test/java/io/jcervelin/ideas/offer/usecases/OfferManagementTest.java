@@ -107,7 +107,6 @@ public class OfferManagementTest {
 
         Assertions.assertThat(result.size()).isEqualTo(2);
         Assertions.assertThat(result).containsExactlyInAnyOrder(ivoryPiano,cabinet);
-
     }
 
     @Test
@@ -122,11 +121,45 @@ public class OfferManagementTest {
         // WHEN the method cancelOffer is called it should return a cancelled order
         final Offer result = target.cancelOffer(id);
 
-        // The ObjectId created should be the same
+        // THEN the ObjectId created should be the same
         Assertions.assertThat(objectIdCaptor.getValue().toString()).isEqualTo(id);
 
-        // The expired date should not be altered by this method.
+        // AND the expired date should not be altered by this method.
         Assertions.assertThat(result.getEndOffer()).isEqualTo(ivoryPianoExpired.getEndOffer());
+    }
+
+    @Test
+    public void cancelOfferShouldReturnOfferErrorExceptionWhenMongoIsOutage() {
+        // GIVEN an random id
+        final String id = "5c2606d62be9ac82d9a1c119";
+
+        doThrow(new RuntimeException("Mongo is outage."))
+                .when(offerRepository).cancelOfferById(eq(new ObjectId(id)));
+
+        thrown.expect(OfferErrorException.class);
+        thrown.expectMessage("The offer could not be cancelled. [Mongo is outage.]");
+
+        // WHEN the method cancelOffer is called it should return a cancelled order
+        target.cancelOffer(id);
+
+        // THEN it should return OfferErrorException
+    }
+
+    @Test
+    public void cancelOfferShouldReturnOfferNotFoundWhenIdIsNotFound() {
+        // GIVEN an random id
+        final String id = "5c2606d62be9ac82d9a1c119";
+
+        doReturn(Optional.empty())
+                .when(offerRepository).cancelOfferById(eq(new ObjectId(id)));
+
+        thrown.expect(OfferNotFoundException.class);
+        thrown.expectMessage("No data found.");
+
+        // WHEN the method cancelOffer is called it should return a cancelled order
+        target.cancelOffer(id);
+
+        // THEN it should return OfferNotFoundException
     }
 
 }
