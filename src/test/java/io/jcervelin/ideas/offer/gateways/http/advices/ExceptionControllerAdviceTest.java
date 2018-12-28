@@ -25,6 +25,12 @@ public class ExceptionControllerAdviceTest {
     }
 
     @Test
+    public void handleExceptionWithEmptyMessage() {
+        ResponseEntity<ErrorResponse> errorResponseResponseEntity = target.handleException(new Exception(""));
+        Assertions.assertThat(errorResponseResponseEntity.getStatusCodeValue()).isEqualTo(500);
+    }
+
+    @Test
     public void noContentFound() {
         ResponseEntity<ErrorResponse> errorResponseResponseEntity = target.noContentFound(new OfferNotFoundException("Data not found."));
         Assertions.assertThat(errorResponseResponseEntity.getStatusCodeValue()).isEqualTo(204);
