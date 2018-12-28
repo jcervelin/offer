@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -178,8 +179,8 @@ public class OfferControllerIT {
         ivoryPiano.setName(null);
         // WHEN the endpoint is called
         final MvcResult mvcResult = mockMvc.perform(post("/offers")
-                .content(objectMapper.writeValueAsBytes(ivoryPiano))
-                .characterEncoding("utf-8"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ivoryPiano)))
                 .andExpect(status().isUnprocessableEntity())
                 .andReturn();
 
@@ -188,6 +189,9 @@ public class OfferControllerIT {
                 .getResponse().getContentAsByteArray());
 
         final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
+        Assertions.assertThat(result.getCode()).isEqualTo(422);
+        Assertions.assertThat(result.getMessage()).isEqualTo("The name is required");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Unprocessable Entity");
 
     }
 

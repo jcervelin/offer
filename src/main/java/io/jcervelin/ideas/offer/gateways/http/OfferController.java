@@ -5,10 +5,7 @@ import io.jcervelin.ideas.offer.usecases.OfferManagement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,7 +22,7 @@ public class OfferController {
     }
 
     @PostMapping
-    public ResponseEntity<Offer> saveOffer(final Offer offer) {
+    public ResponseEntity<Offer> saveOffer(@RequestBody final Offer offer) {
         return new ResponseEntity<>(offerManagement.save(offer), HttpStatus.OK);
     }
 }
