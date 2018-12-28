@@ -4,6 +4,7 @@ import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
+import io.jcervelin.ideas.offer.utils.OfferValidator;
 import org.assertj.core.api.Assertions;
 import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
@@ -44,6 +45,9 @@ public class OfferManagementTest {
     @Mock
     private OfferRepository offerRepository;
 
+    @Mock
+    private OfferValidator offerValidator;
+
     @Captor
     private ArgumentCaptor<ObjectId> objectIdCaptor;
 
@@ -68,15 +72,16 @@ public class OfferManagementTest {
     public void savePersistDataAndDoNotAlterTheContent() {
         // GIVEN an offer
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
-
-        doReturn(ivoryPiano).when(offerRepository).save(any(Offer.class));
+        final Offer ivoryPianoWithId = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
+        ivoryPianoWithId.setId(new ObjectId());
+        doReturn(ivoryPianoWithId).when(offerRepository).save(any(Offer.class));
 
         // WHEN the method is called
         final Offer result = target.save(ivoryPiano);
 
         // THEN it should the saved offer with an id
-        Assertions.assertThat(ivoryPiano).isEqualToIgnoringGivenFields(result,"id");
-        Assertions.assertThat(ivoryPiano.getId()).isNotNull();
+        Assertions.assertThat(result).isEqualToIgnoringGivenFields(ivoryPiano,"id");
+        Assertions.assertThat(result.getId()).isNotNull();
     }
 
     @Test

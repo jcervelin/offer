@@ -138,6 +138,7 @@ public class OfferControllerIT {
         // WHEN the endpoint is called
         final MvcResult mvcResult = mockMvc.perform(post("/offers")
                 .content(objectMapper.writeValueAsBytes(ivoryPiano))
+                .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -160,16 +161,20 @@ public class OfferControllerIT {
         // WHEN the endpoint is called
         final MvcResult mvcResult = mockMvc.perform(post("/offers")
                 .content(objectMapper.writeValueAsBytes(ivoryPiano))
+                .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isInternalServerError())
                 .andReturn();
 
-        // THEN a status 422 with error message should be returned
+        // THEN a status 500 with error message should be returned
         final String content = new String(mvcResult
                 .getResponse().getContentAsByteArray());
 
         final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
-
+        Assertions.assertThat(result.getCode()).isEqualTo(500);
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Internal Server Error");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Internal Server Error");
+        Assertions.assertThat(result.getMessage()).isEqualTo("Required request body is missing: public org.springframework.http.ResponseEntity<io.jcervelin.ideas.offer.models.Offer> io.jcervelin.ideas.offer.gateways.http.OfferController.saveOffer(io.jcervelin.ideas.offer.models.Offer)");
     }
 
     @Test

@@ -5,7 +5,6 @@ import io.jcervelin.ideas.offer.models.exceptions.InvalidOfferException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.*;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
@@ -41,7 +39,6 @@ public class ExceptionControllerAdvice {
     }
 
     private ResponseEntity<ErrorResponse> createMessage(final Exception exception, final HttpStatus httpStatus) {
-        log.info("handleException", exception);
         final ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(httpStatus);
         errorResponse.setCode(httpStatus.value());

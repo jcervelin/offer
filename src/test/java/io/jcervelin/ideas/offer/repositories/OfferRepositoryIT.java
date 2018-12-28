@@ -1,5 +1,6 @@
 package io.jcervelin.ideas.offer.repositories;
 
+import io.jcervelin.ideas.offer.OfferApplication;
 import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
@@ -10,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,9 +24,10 @@ import static br.com.six2six.fixturefactory.Fixture.from;
 import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
 import static io.jcervelin.ideas.offer.templates.OfferTemplate.*;
 import static java.time.LocalDate.now;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@DataMongoTest
+@SpringBootTest(classes = {OfferApplication.class}, webEnvironment = RANDOM_PORT)
 @ComponentScan(basePackages = {"io.jcervelin.ideas.offer"})
 public class OfferRepositoryIT {
 
