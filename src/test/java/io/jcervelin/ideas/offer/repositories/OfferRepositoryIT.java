@@ -115,22 +115,23 @@ public class OfferRepositoryIT {
         // GIVEN a valid offer, it should be cancelled
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         final LocalDate now = LocalDate.now();
-        target.save(ivoryPianoValid);
-        final Offer offerWithId = target.findValidOffers(now).stream().findAny().orElseThrow(() -> new OfferNotFoundException("No data found."));
+        final Offer offerWithId = target.save(ivoryPianoValid);
+        final Optional<Offer> offerOpt = target.cancelOfferById(offerWithId.getId());
 
         // WHEN the method cancelOffer is called the return should
         // be the same offer with the attribute endOffer = today - 1 day
-
+        final Offer offerCancelled = offerOpt.filter(offer -> offer.getEndOffer().isEqual(now.minusDays(1)))
+                .orElseThrow(() -> new OfferNotFoundException("No data found."));
+        Assertions.assertThat(offerCancelled).isNotNull();
     }
 
     @Test(expected = RuntimeException.class)
     public void cancelOfferShouldReturnIllegalArgumentExceptionWhenNullIdIsGiven() {
         // GIVEN a valid offer, it should be cancelled
-        final Optional<Offer> offer = target.cancelOfferById(null);
+        target.cancelOfferById(null);
 
         // WHEN the method cancelOffer is called with a null id the return should
         // some kind of RuntimeException
-
     }
 
     @Test
@@ -139,10 +140,10 @@ public class OfferRepositoryIT {
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         ivoryPianoValid.setId(new ObjectId());
         final Optional<Offer> offer = target.cancelOfferById(ivoryPianoValid.getId());
+        Assertions.assertThat(offer).isEmpty();
 
-        // WHEN the method cancelOffer is called the return should
-        // return exception OfferNotFoundException
-
+        // WHEN the method cancelOffer is called
+        // the return should be empty
     }
 
 
