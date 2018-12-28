@@ -16,6 +16,11 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
+
+/**
+ * Class responsible for customise the date format of the JSON responses
+ * the pattern to LocalDate is yyyy-MM-dd
+ */
 @Configuration
 public class JacksonParser {
 

@@ -8,6 +8,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -22,9 +25,11 @@ public class Offer implements Serializable {
 
     @Id
     private ObjectId id;
+    @NotEmpty(message="The name is required")
     private String name;
     private double price;
     private double offerPrice;
+    @NotNull(message="The startOffer is required")
     private LocalDate startOffer;
     private LocalDate endOffer;
     private String currency;

@@ -1,6 +1,7 @@
 package io.jcervelin.ideas.offer.gateways.http.advices;
 
 import io.jcervelin.ideas.offer.models.exceptions.ErrorResponse;
+import io.jcervelin.ideas.offer.models.exceptions.InvalidOfferException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,11 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(OfferErrorException.class)
     public ResponseEntity<ErrorResponse> offerErrorException(final Exception exception) {
         return createMessage(exception, INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidOfferException.class)
+    public ResponseEntity<ErrorResponse> invalidOfferException(final Exception exception) {
+        return createMessage(exception, UNPROCESSABLE_ENTITY);
     }
 
     private ResponseEntity<ErrorResponse> createMessage(final Exception exception, final HttpStatus httpStatus) {

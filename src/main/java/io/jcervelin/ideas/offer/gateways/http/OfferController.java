@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,10 @@ public class OfferController {
     @GetMapping
     public ResponseEntity<List<Offer>> getValidOffers() {
         return new ResponseEntity<>(offerManagement.getValidOffers(), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Offer> saveOffer(final Offer offer) {
+        return new ResponseEntity<>(offerManagement.save(offer), HttpStatus.OK);
     }
 }

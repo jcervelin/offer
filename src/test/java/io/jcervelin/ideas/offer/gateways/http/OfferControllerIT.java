@@ -27,13 +27,14 @@ import static io.jcervelin.ideas.offer.templates.OfferTemplate.IVORY_PIANO_FROM_
 import static io.jcervelin.ideas.offer.templates.OfferTemplate.WOODEN_CABINET_FROM_60_TO_40;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = {OfferApplication.class}, webEnvironment = RANDOM_PORT)
 @ComponentScan(basePackages = {"io.jcervelin.ideas.offer"})
-public class OfferControllerTest {
+public class OfferControllerIT {
 
     private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
 
@@ -126,6 +127,68 @@ public class OfferControllerTest {
         Assertions.assertThat(result.getCode()).isEqualTo(204);
         Assertions.assertThat(result.getMessage()).isEqualTo("No data found.");
         Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("No Content");
+    }
+
+    @Test
+    public void saveOffersShouldSaveAndGenerateANewId() throws Exception {
+        // GIVEN 1 valid offer
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+                .content(objectMapper.writeValueAsBytes(ivoryPiano))
+                .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // THEN a status 200 and a content with the valid offer should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final Offer result = objectMapper.readValue(content, Offer.class);
+
+        Assertions.assertThat(result).isEqualToIgnoringGivenFields(ivoryPiano,"id");
+        Assertions.assertThat(result.getId()).isNotNull();
+    }
+
+    @Test
+    public void saveOffersShouldReturnErrorWhenEmptyContentIsSent() throws Exception {
+        // GIVEN 1 valid offer
+        final Offer ivoryPiano = null;
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+                .content(objectMapper.writeValueAsBytes(ivoryPiano))
+                .characterEncoding("utf-8"))
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+
+        // THEN a status 422 with error message should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
+
+    }
+
+    @Test
+    public void saveOffersShouldReturnErrorWhenThereIsNoName() throws Exception {
+        // GIVEN 1 valid offer
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        ivoryPiano.setName(null);
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+                .content(objectMapper.writeValueAsBytes(ivoryPiano))
+                .characterEncoding("utf-8"))
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+
+        // THEN a status 422 with error message should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
+
     }
 
 }
