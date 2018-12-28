@@ -5,16 +5,13 @@ import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.InvalidOfferException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
+import io.jcervelin.ideas.offer.utils.OfferValidator;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
 
@@ -23,8 +20,7 @@ import static java.time.LocalDate.now;
 public class OfferManagement {
 
     private final OfferRepository repository;
-
-    private final Validator validator;
+    private final OfferValidator validator;
 
     /**
      * Method responsible for saving offers and wrap connection exceptions
@@ -35,14 +31,8 @@ public class OfferManagement {
      */
     public Offer save(final Offer offer) {
         try {
-            final Set<ConstraintViolation<Offer>> validations = validator.validate(offer);
-            if(validations.isEmpty())
-                return repository.save(offer);
-            else throw new InvalidOfferException(
-                    validations
-                            .stream()
-                            .map(ConstraintViolation::getMessage)
-                            .collect(Collectors.joining(" - ")));
+            validator.validate(offer);
+            return repository.save(offer);
         } catch (InvalidOfferException e) {
             throw e;
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-package io.jcervelin.ideas.offer.json;
+package io.jcervelin.ideas.offer.configs.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

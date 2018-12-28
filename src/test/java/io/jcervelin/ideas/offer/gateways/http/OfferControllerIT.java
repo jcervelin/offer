@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static br.com.six2six.fixturefactory.Fixture.from;
@@ -27,8 +28,7 @@ import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemp
 import static io.jcervelin.ideas.offer.templates.OfferTemplate.IVORY_PIANO_FROM_100_TO_70_VALID;
 import static io.jcervelin.ideas.offer.templates.OfferTemplate.WOODEN_CABINET_FROM_60_TO_40;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -240,6 +240,30 @@ public class OfferControllerIT {
                 .contains("The startOffer is required")
                 .contains("The name is required");
         Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Unprocessable Entity");
+    }
+
+    @Test
+    public void cancelOffersShouldUpdateTheEndDate() throws Exception {
+        // GIVEN 1 valid offer saved
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        final Offer savedWithId = mongoTemplate.save(ivoryPiano);
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(put("/offers")
+                .content(savedWithId.getId().toString())
+                .characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // THEN a status 200 and a content with the valid offer should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final Offer result = objectMapper.readValue(content, Offer.class);
+
+        Assertions.assertThat(result).isEqualToIgnoringGivenFields(ivoryPiano,"id","endOffer");
+        Assertions.assertThat(result.getId()).isNotNull();
+        Assertions.assertThat(result.getEndOffer()).isEqualTo(LocalDate.now().minusDays(1));
     }
 
 }

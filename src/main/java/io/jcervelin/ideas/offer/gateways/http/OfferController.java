@@ -25,4 +25,9 @@ public class OfferController {
     public ResponseEntity<Offer> saveOffer(@RequestBody final Offer offer) {
         return new ResponseEntity<>(offerManagement.save(offer), HttpStatus.OK);
     }
+
+    @PutMapping
+    public ResponseEntity<Offer> cancelOffer(@RequestBody final String id) {
+        return new ResponseEntity<>(offerManagement.cancelOffer(id), HttpStatus.OK);
+    }
 }
