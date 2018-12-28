@@ -5,11 +5,14 @@ import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import org.assertj.core.api.Assertions;
+import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -18,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static br.com.six2six.fixturefactory.Fixture.from;
 import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
@@ -39,6 +43,9 @@ public class OfferManagementTest {
 
     @Mock
     private OfferRepository offerRepository;
+
+    @Captor
+    private ArgumentCaptor<ObjectId> objectIdCaptor;
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -102,4 +109,24 @@ public class OfferManagementTest {
         Assertions.assertThat(result).containsExactlyInAnyOrder(ivoryPiano,cabinet);
 
     }
+
+    @Test
+    public void cancelOfferShouldReturnCancelledOffer() {
+
+        // GIVEN an expired order
+        final Offer ivoryPianoExpired = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
+        final String id = "5c2606d62be9ac82d9a1c119";
+
+        doReturn(Optional.of(ivoryPianoExpired)).when(offerRepository).cancelOfferById(objectIdCaptor.capture());
+
+        // WHEN the method cancelOffer is called it should return a cancelled order
+        final Offer result = target.cancelOffer(id);
+
+        // The ObjectId created should be the same
+        Assertions.assertThat(objectIdCaptor.getValue().toString()).isEqualTo(id);
+
+        // The expired date should not be altered by this method.
+        Assertions.assertThat(result.getEndOffer()).isEqualTo(ivoryPianoExpired.getEndOffer());
+    }
+
 }
