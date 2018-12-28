@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jcervelin.ideas.offer.OfferApplication;
 import io.jcervelin.ideas.offer.models.Offer;
+import io.jcervelin.ideas.offer.models.exceptions.ErrorResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -120,7 +121,11 @@ public class OfferControllerTest {
         final String content = new String(mvcResult
                 .getResponse().getContentAsByteArray());
 
+        ErrorResponse result = objectMapper.readValue(content,ErrorResponse.class);
 
-        Assertions.assertThat(content).isEmpty();
+        Assertions.assertThat(result.getCode()).isEqualTo(204);
+        Assertions.assertThat(result.getMessage()).isEqualTo("No data found.");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("No Content");
     }
+
 }

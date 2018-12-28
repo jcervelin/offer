@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -15,7 +16,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Document(collection = "offers")
-public class Offer {
+public class Offer implements Serializable {
+
+    private static final long serialVersionUID = 5184262962570378015L;
+
     @Id
     private ObjectId id;
     private String name;
