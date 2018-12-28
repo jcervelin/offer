@@ -42,7 +42,8 @@ public class ExceptionControllerAdvice {
         final ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(httpStatus);
         errorResponse.setCode(httpStatus.value());
-        errorResponse.setMessage(exception.getMessage().isEmpty() ? ERROR_NOT_DEFINITION : exception.getMessage());
+        errorResponse.setMessage(exception.getMessage()!= null && exception.getMessage().isEmpty()
+                ? ERROR_NOT_DEFINITION : exception.getMessage());
         return new ResponseEntity<>(errorResponse, httpStatus);
     }
 
