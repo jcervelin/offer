@@ -23,6 +23,7 @@ import java.util.List;
 import static br.com.six2six.fixturefactory.Fixture.from;
 import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
 import static io.jcervelin.ideas.offer.templates.OfferTemplate.IVORY_PIANO_FROM_100_TO_70_VALID;
+import static io.jcervelin.ideas.offer.templates.OfferTemplate.WOODEN_CABINET_FROM_60_TO_40;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,23 +63,64 @@ public class OfferControllerTest {
     }
 
     @Test
-    public void getValidOffersShouldReturn1Item() throws Exception {
+    public void getValidOffersShouldReturn1Offer() throws Exception {
+        // GIVEN 1 valid offer saved
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
-
         mongoTemplate.save(ivoryPiano);
 
-        // WHEN
+        // WHEN the endpoint is called
         final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // THEN
+        // THEN a status 200 and content should be returned
         final String content = new String(mvcResult
                 .getResponse().getContentAsByteArray());
 
-        List<Offer> results = objectMapper.readValue(content, new TypeReference<List<Offer>>() {});
+        final List<Offer> results = objectMapper.readValue(content, new TypeReference<List<Offer>>() {});
 
         Assertions.assertThat(results.size()).isEqualTo(1);
         Assertions.assertThat(results).containsExactly(ivoryPiano);
+    }
+
+    @Test
+    public void getValidOffersShouldReturnOnlyValidOffers() throws Exception {
+        // GIVEN 1 valid offer and 1 expired offer saved
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        mongoTemplate.save(ivoryPiano);
+
+        final Offer cabinetExpired = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
+        mongoTemplate.save(cabinetExpired);
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // THEN a status 200 and a content with the valid offer should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final List<Offer> results = objectMapper.readValue(content, new TypeReference<List<Offer>>() {});
+
+        Assertions.assertThat(results.size()).isEqualTo(1);
+        Assertions.assertThat(results).containsExactly(ivoryPiano);
+    }
+
+    @Test
+    public void getValidOffersShouldOfferNotFoundException() throws Exception {
+        // GIVEN none offer
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        // THEN a status 204 (NO CONTENT) should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+
+        Assertions.assertThat(content).isEmpty();
     }
 }
