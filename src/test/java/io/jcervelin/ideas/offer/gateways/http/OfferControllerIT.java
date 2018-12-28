@@ -195,4 +195,51 @@ public class OfferControllerIT {
 
     }
 
+    @Test
+    public void saveOffersShouldReturnErrorWhenThereIsNoStartOffer() throws Exception {
+        // GIVEN 1 valid offer
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        ivoryPiano.setStartOffer(null);
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ivoryPiano)))
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+
+        // THEN a status 422 with error message should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
+        Assertions.assertThat(result.getCode()).isEqualTo(422);
+        Assertions.assertThat(result.getMessage()).isEqualTo("The startOffer is required");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Unprocessable Entity");
+    }
+
+    @Test
+    public void saveOffersShouldReturnErrorWhenThereIsNoNameAndStartOffer() throws Exception {
+        // GIVEN 1 valid offer
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        ivoryPiano.setStartOffer(null);
+        ivoryPiano.setName("");
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ivoryPiano)))
+                .andExpect(status().isUnprocessableEntity())
+                .andReturn();
+
+        // THEN a status 422 with error message should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final ErrorResponse result = objectMapper.readValue(content, ErrorResponse.class);
+        Assertions.assertThat(result.getCode()).isEqualTo(422);
+        Assertions.assertThat(result.getMessage())
+                .contains("The startOffer is required")
+                .contains("The name is required");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("Unprocessable Entity");
+    }
+
 }
