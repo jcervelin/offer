@@ -2,7 +2,7 @@
 
 A simple RESTful to make offers
 
-It's an system which is possible add new offers, list and cancel.
+It's a system which is possible adding new offers, list and cancel.
 
 ## How do I build?
 ``` Shell
