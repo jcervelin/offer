@@ -5,7 +5,9 @@ A simple RESTful to make offers
 It's an system which is possible add new offers, list and cancel.
 
 ## How do I build?
+``` Shell
 mvn clean install
+```
 
 ## How do I run it?
 ``` Shell
