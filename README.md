@@ -17,7 +17,7 @@ Accessing the root you will be redirected to the swagger.
 
 http://localhost:8080
 
-## Endpoints availables
+## Endpoints available
 * List valid offers: ``` GET /api/offers ```
 * Save offers: ``` POST /api/offers ```
 * Cancel offers: ``` PUT /api/offers/{id} ```
