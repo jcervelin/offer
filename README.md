@@ -17,8 +17,8 @@ http://localhost:8080
 ## Endpoints availables
 * List valid offers: GET /api/offers
 * Save offers: POST /api/offers
-* Cancel offers: PUT /api/offers
+* Cancel offers: PUT /api/offers/{id}
 * List all offers, including the expired/canceled ones: GET /api/offers/all
 
-For further details about the request and response, see wiki.
+For further details about the request, see wiki.
 https://github.com/jcervelin/offer/wiki/Offers
