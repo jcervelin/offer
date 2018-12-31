@@ -22,3 +22,8 @@ http://localhost:8080
 
 For further details about the request, see wiki.
 https://github.com/jcervelin/offer/wiki/Offers
+
+## Tests
+mvn test
+Unit tests and integrated tests using mockito, mock mvc, junit
+% of test coverage verified by jacoco.
