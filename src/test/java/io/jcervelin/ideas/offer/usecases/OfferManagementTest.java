@@ -6,7 +6,6 @@ import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import io.jcervelin.ideas.offer.utils.OfferValidator;
 import org.assertj.core.api.Assertions;
-import org.bson.types.ObjectId;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +33,7 @@ public class OfferManagementTest {
 
     private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
 
+    public static final String MOCK_ID = "5c2606d62be9ac82d9a1c119";
     @BeforeClass
     public static void setup() {
         loadTemplates(TEMPLATE_PACKAGE);
@@ -49,7 +49,7 @@ public class OfferManagementTest {
     private OfferValidator offerValidator;
 
     @Captor
-    private ArgumentCaptor<ObjectId> objectIdCaptor;
+    private ArgumentCaptor<String> objectIdCaptor;
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
@@ -73,7 +73,7 @@ public class OfferManagementTest {
         // GIVEN an offer
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
         final Offer ivoryPianoWithId = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70);
-        ivoryPianoWithId.setId(new ObjectId());
+        ivoryPianoWithId.setId(MOCK_ID);
         doReturn(ivoryPianoWithId).when(offerRepository).save(any(Offer.class));
 
         // WHEN the method is called
@@ -135,15 +135,14 @@ public class OfferManagementTest {
 
         // GIVEN an expired order
         final Offer ivoryPianoExpired = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
-        final String id = "5c2606d62be9ac82d9a1c119";
 
         doReturn(Optional.of(ivoryPianoExpired)).when(offerRepository).cancelOfferById(objectIdCaptor.capture());
 
         // WHEN the method cancelOffer is called it should return a cancelled order
-        final Offer result = target.cancelOffer(id);
+        final Offer result = target.cancelOffer(MOCK_ID);
 
         // THEN the ObjectId created should be the same
-        Assertions.assertThat(objectIdCaptor.getValue().toString()).isEqualTo(id);
+        Assertions.assertThat(objectIdCaptor.getValue()).isEqualTo(MOCK_ID);
 
         // AND the expired date should not be altered by this method.
         Assertions.assertThat(result.getEndOffer()).isEqualTo(ivoryPianoExpired.getEndOffer());
@@ -152,10 +151,10 @@ public class OfferManagementTest {
     @Test
     public void cancelOfferShouldReturnOfferErrorExceptionWhenMongoIsOutage() {
         // GIVEN an random id
-        final String id = "5c2606d62be9ac82d9a1c119";
+        final String id = MOCK_ID;
 
         doThrow(new RuntimeException("Mongo is outage."))
-                .when(offerRepository).cancelOfferById(eq(new ObjectId(id)));
+                .when(offerRepository).cancelOfferById(id);
 
         thrown.expect(OfferErrorException.class);
         thrown.expectMessage("The offer could not be cancelled. [Mongo is outage.]");
@@ -169,16 +168,15 @@ public class OfferManagementTest {
     @Test
     public void cancelOfferShouldReturnOfferNotFoundWhenIdIsNotFound() {
         // GIVEN an random id
-        final String id = "5c2606d62be9ac82d9a1c119";
 
         doReturn(Optional.empty())
-                .when(offerRepository).cancelOfferById(eq(new ObjectId(id)));
+                .when(offerRepository).cancelOfferById(MOCK_ID);
 
         thrown.expect(OfferNotFoundException.class);
         thrown.expectMessage("No data found.");
 
         // WHEN the method cancelOffer is called it should return a cancelled order
-        target.cancelOffer(id);
+        target.cancelOffer(MOCK_ID);
 
         // THEN it should return OfferNotFoundException
     }

@@ -46,7 +46,7 @@ public class OfferController {
      * @return the offer saved with it's new id created automatically.
      */
     @PostMapping
-    @ApiOperation("Save an offer. The name and the startOffer date are required.")
+    @ApiOperation("Save an offer. The name and the startOffer date are required. Pattern for dates dd/MM/yyyy")
     public ResponseEntity<Offer> saveOffer(@RequestBody final Offer offer) {
         return new ResponseEntity<>(offerManagement.save(offer), HttpStatus.OK);
     }

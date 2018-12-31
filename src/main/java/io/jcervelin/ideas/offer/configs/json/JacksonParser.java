@@ -19,7 +19,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 /**
  * Class responsible for customise the date format of the JSON responses
- * the pattern to LocalDate is yyyy-MM-dd
+ * the pattern to LocalDate is dd/MM/yyyy
  */
 @Configuration
 public class JacksonParser {
@@ -40,7 +40,7 @@ public class JacksonParser {
                 .featuresToDisable(WRITE_DATES_AS_TIMESTAMPS)
                 .serializerByType(ObjectId.class, new ToStringSerializer())
                 .modules(javaTimeModule)
-                .simpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                .simpleDateFormat("dd/MM/yyyy'T'HH:mm:ss'Z'")
                 .build();
     }
 

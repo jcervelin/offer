@@ -4,7 +4,6 @@ import io.jcervelin.ideas.offer.gateways.repositories.OfferMongoRepository;
 import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -33,7 +32,7 @@ public class OfferRepositoryImpl implements OfferRepository {
      * @return when id is not found it returns an Optional.empty()
      */
     @Override
-    public Optional<Offer> cancelOfferById (final ObjectId id) {
+    public Optional<Offer> cancelOfferById (final String id) {
 
         mongoTemplate.updateFirst(
                 new Query().addCriteria(Criteria.where("_id").is(id)),

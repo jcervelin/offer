@@ -7,7 +7,6 @@ import io.jcervelin.ideas.offer.models.exceptions.OfferErrorException;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import io.jcervelin.ideas.offer.utils.OfferValidator;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -68,7 +67,7 @@ public class OfferManagement {
      */
     public Offer cancelOffer (final String id) {
         try {
-            final Optional<Offer> offerCanceled = repository.cancelOfferById(new ObjectId(id));
+            final Optional<Offer> offerCanceled = repository.cancelOfferById(id);
             return offerCanceled.orElseThrow(() -> new OfferNotFoundException("No data found."));
         } catch (OfferNotFoundException e) {
             throw e;

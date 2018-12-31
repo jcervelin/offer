@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class OfferControllerIT {
 
     private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
+    private static String ENDPOINT = "/api/offers";
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -72,7 +73,7 @@ public class OfferControllerIT {
         mongoTemplate.save(ivoryPiano);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
+        final MvcResult mvcResult = mockMvc.perform(get(ENDPOINT).characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -96,7 +97,7 @@ public class OfferControllerIT {
         mongoTemplate.save(cabinetExpired);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
+        final MvcResult mvcResult = mockMvc.perform(get(ENDPOINT).characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -115,7 +116,7 @@ public class OfferControllerIT {
         // GIVEN none offer
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(get("/offers").characterEncoding("utf-8"))
+        final MvcResult mvcResult = mockMvc.perform(get(ENDPOINT).characterEncoding("utf-8"))
                 .andExpect(status().isNoContent())
                 .andReturn();
 
@@ -136,7 +137,7 @@ public class OfferControllerIT {
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+        final MvcResult mvcResult = mockMvc.perform(post(ENDPOINT)
                 .content(objectMapper.writeValueAsBytes(ivoryPiano))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
@@ -159,8 +160,8 @@ public class OfferControllerIT {
         final Offer ivoryPiano = null;
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(post("/offers")
-                .content(objectMapper.writeValueAsBytes(ivoryPiano))
+        final MvcResult mvcResult = mockMvc.perform(post(ENDPOINT)
+                .content(objectMapper.writeValueAsString(ivoryPiano))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andExpect(status().isInternalServerError())
@@ -183,7 +184,7 @@ public class OfferControllerIT {
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         ivoryPiano.setName(null);
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+        final MvcResult mvcResult = mockMvc.perform(post(ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ivoryPiano)))
                 .andExpect(status().isUnprocessableEntity())
@@ -206,7 +207,7 @@ public class OfferControllerIT {
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         ivoryPiano.setStartOffer(null);
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+        final MvcResult mvcResult = mockMvc.perform(post(ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ivoryPiano)))
                 .andExpect(status().isUnprocessableEntity())
@@ -229,7 +230,7 @@ public class OfferControllerIT {
         ivoryPiano.setStartOffer(null);
         ivoryPiano.setName("");
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(post("/offers")
+        final MvcResult mvcResult = mockMvc.perform(post(ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ivoryPiano)))
                 .andExpect(status().isUnprocessableEntity())
@@ -254,8 +255,8 @@ public class OfferControllerIT {
         final Offer savedWithId = mongoTemplate.save(ivoryPiano);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(put("/offers")
-                .content(savedWithId.getId().toString())
+        final MvcResult mvcResult = mockMvc.perform(put(ENDPOINT)
+                .content(savedWithId.getId())
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();

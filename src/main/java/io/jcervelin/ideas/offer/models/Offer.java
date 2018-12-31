@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -24,7 +22,7 @@ public class Offer implements Serializable {
     private static final long serialVersionUID = 5184262962570378015L;
 
     @Id
-    private ObjectId id;
+    private String id;
     @NotEmpty(message="The name is required")
     private String name;
     private double price;

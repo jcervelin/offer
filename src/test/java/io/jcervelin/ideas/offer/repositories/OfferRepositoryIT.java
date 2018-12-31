@@ -5,7 +5,6 @@ import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
 import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import org.assertj.core.api.Assertions;
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,6 +29,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = {OfferApplication.class}, webEnvironment = RANDOM_PORT)
 @ComponentScan(basePackages = {"io.jcervelin.ideas.offer"})
 public class OfferRepositoryIT {
+    public static final String MOCK_ID = "5c2606d62be9ac82d9a1c119";
 
     private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
 
@@ -140,7 +140,7 @@ public class OfferRepositoryIT {
     public void cancelOfferShouldReturnEmptyWhenIdIsNotFound() {
         // GIVEN a valid offer, it should be cancelled
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
-        ivoryPianoValid.setId(new ObjectId());
+        ivoryPianoValid.setId(MOCK_ID);
         final Optional<Offer> offer = target.cancelOfferById(ivoryPianoValid.getId());
         Assertions.assertThat(offer).isEmpty();
 
