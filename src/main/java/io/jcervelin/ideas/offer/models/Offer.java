@@ -1,5 +1,6 @@
 package io.jcervelin.ideas.offer.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Document(collection = "offers")
 public class Offer implements Serializable {
 
@@ -28,7 +28,9 @@ public class Offer implements Serializable {
     private double price;
     private double offerPrice;
     @NotNull(message="The startOffer is required")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate startOffer;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate endOffer;
     private String currency;
     private String description;

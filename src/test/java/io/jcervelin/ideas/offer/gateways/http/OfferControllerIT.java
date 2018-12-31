@@ -256,15 +256,14 @@ public class OfferControllerIT {
         final Offer savedWithId = mongoTemplate.save(ivoryPiano);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(put(ENDPOINT)
-                .content(savedWithId.getId())
+        final MvcResult mvcResult = mockMvc.perform(put(ENDPOINT + "/" + savedWithId.getId())
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
 
         // THEN a status 200 and a content with the valid offer should be returned
-        final String content = new String(mvcResult
-                .getResponse().getContentAsByteArray());
+        final String content = mvcResult
+                .getResponse().getContentAsString();
 
         final Offer result = objectMapper.readValue(content, Offer.class);
 
