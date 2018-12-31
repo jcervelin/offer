@@ -21,3 +21,4 @@ http://localhost:8080
 * List all offers, including the expired/canceled ones: GET /api/offers/all
 
 For further details about the request and response, see wiki.
+https://github.com/jcervelin/offer/wiki/Offers
