@@ -69,7 +69,7 @@ public class OfferRepositoryIT {
     }
 
     @Test
-    public void getOffersShouldReturnOnlyNonExpiredOffers() {
+    public void getValidOffersShouldReturnOnlyNonExpiredOffers() {
         // GIVEN 2 pianos, one expired and another valid, saved in the database
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         final Offer ivoryPianoExpired = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
@@ -87,7 +87,7 @@ public class OfferRepositoryIT {
     }
 
     @Test
-    public void getOffersShouldReturnEmptyWhenAllOffersAreExpired() {
+    public void getValidOffersShouldReturnEmptyWhenAllOffersAreExpired() {
         // GIVEN 2 pianos, one expired and another valid, saved in the database
         final Offer ivoryPianoExpiredTwoDaysAgo = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_80_EXPIRED_TWO_DAYS);
         final Offer ivoryPianoExpiredOneDayAgo = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
@@ -103,7 +103,7 @@ public class OfferRepositoryIT {
     }
 
     @Test
-    public void getOffersShouldReturnEmptyBecauseThereIsNoData() {
+    public void getValidOffersShouldReturnEmptyBecauseThereIsNoData() {
         // GIVEN a empty database
 
         // WHEN the method getOffers is called the return should be empty, because there is no valid offer
@@ -147,6 +147,37 @@ public class OfferRepositoryIT {
         // WHEN the method cancelOffer is called
         // the return should be empty
     }
+
+    @Test
+    public void getOffersShouldReturnAllOffers() {
+        // GIVEN 2 pianos, one expired and another valid, saved in the database
+        final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        final Offer ivoryPianoExpired = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
+
+        target.save(ivoryPianoValid);
+        target.save(ivoryPianoExpired);
+
+        // WHEN the method getOffers is called
+        final List<Offer> result = target.findAll();
+
+        // THEN it should return all offers
+        Assertions.assertThat(result.size()).isEqualTo(2);
+
+        Assertions.assertThat(result).containsExactly(ivoryPianoValid,ivoryPianoExpired);
+
+    }
+
+    @Test
+    public void getOffersShouldReturnEmptyBecauseThereIsNoData() {
+        // GIVEN a empty database
+
+        // WHEN the method getOffers is called the return should be empty, because there is no offer
+        final List<Offer> result = target.findAll();
+
+        Assertions.assertThat(result.size()).isEqualTo(0);
+    }
+
+
 
 
 }

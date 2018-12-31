@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OfferRepository {
+    List<Offer> findAll();
     List<Offer> findValidOffers (final LocalDate localDate);
     Optional<Offer> cancelOfferById (final String id);
     Offer save(final Offer offer);

@@ -85,7 +85,7 @@ public class OfferManagementTest {
     }
 
     @Test
-    public void getOffersShouldReturnOfferErrorException() {
+    public void getValidOffersShouldReturnOfferErrorException() {
         // GIVEN a problem in the database
         doThrow(new RuntimeException("Mongo is outage.")).when(offerRepository).findValidOffers(any(LocalDate.class));
 
@@ -99,7 +99,7 @@ public class OfferManagementTest {
     }
 
     @Test
-    public void getOffersShouldReturnNoDataFoundException() {
+    public void getValidOffersShouldReturnNoDataFoundException() {
         // GIVEN an empty database
         doReturn(Collections.emptyList()).when(offerRepository).findValidOffers(any(LocalDate.class));
 
@@ -113,7 +113,7 @@ public class OfferManagementTest {
     }
 
     @Test
-    public void getOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
+    public void getValidOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
         // GIVEN two offer. One expired and the other valid
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
         final Offer cabinet = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
@@ -179,6 +179,50 @@ public class OfferManagementTest {
         target.cancelOffer(MOCK_ID);
 
         // THEN it should return OfferNotFoundException
+    }
+
+    @Test
+    public void getOffersShouldReturnOfferErrorException() {
+        // GIVEN a problem in the database
+        doThrow(new RuntimeException("Mongo is outage.")).when(offerRepository).findAll();
+
+        thrown.expect(OfferErrorException.class);
+        thrown.expectMessage("The offer could not be found. [Mongo is outage.]");
+
+        // WHEN the method is called
+        target.getOffers();
+
+        // THEN it should return OfferErrorException
+    }
+
+    @Test
+    public void getOffersShouldReturnNoDataFoundException() {
+        // GIVEN an empty database
+        doReturn(Collections.emptyList()).when(offerRepository).findAll();
+
+        thrown.expect(OfferNotFoundException.class);
+        thrown.expectMessage("No data found.");
+
+        //WHEN the method is called
+        target.getOffers();
+
+        // THEN it should return NoDataFoundException
+    }
+
+    @Test
+    public void getOffersShouldNotAlterContentAndReturnWhateverDatabaseBrings() {
+        // GIVEN two offer. One expired and the other valid
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
+        final Offer cabinet = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
+
+        doReturn(Arrays.asList(ivoryPiano,cabinet)).when(offerRepository).findAll();
+
+        // WHEN the method is called
+        final List<Offer> result = target.getOffers();
+
+        // THEN it should return all offers
+        Assertions.assertThat(result.size()).isEqualTo(2);
+        Assertions.assertThat(result).containsExactlyInAnyOrder(ivoryPiano,cabinet);
     }
 
 }

@@ -39,6 +39,7 @@ public class OfferControllerIT {
 
     private static String TEMPLATE_PACKAGE = "io.jcervelin.ideas.offer.templates";
     private static String ENDPOINT = "/api/offers";
+    private static String ALL_OFFERS = ENDPOINT + "/all";
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -270,6 +271,50 @@ public class OfferControllerIT {
         Assertions.assertThat(result).isEqualToIgnoringGivenFields(ivoryPiano,"id","endOffer");
         Assertions.assertThat(result.getId()).isNotNull();
         Assertions.assertThat(result.getEndOffer()).isEqualTo(LocalDate.now().minusDays(1));
+    }
+
+    @Test
+    public void getOffersShouldReturnAllOffers() throws Exception {
+        // GIVEN 1 valid offer and 1 expired offer saved
+        final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
+        mongoTemplate.save(ivoryPiano);
+
+        final Offer cabinetExpired = from(Offer.class).gimme(WOODEN_CABINET_FROM_60_TO_40);
+        mongoTemplate.save(cabinetExpired);
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(get(ALL_OFFERS).characterEncoding("utf-8"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // THEN a status 200 and a content with the valid offer should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        final List<Offer> results = objectMapper.readValue(content, new TypeReference<List<Offer>>() {});
+
+        Assertions.assertThat(results.size()).isEqualTo(2);
+        Assertions.assertThat(results).containsExactly(ivoryPiano,cabinetExpired);
+    }
+
+    @Test
+    public void getOffersShouldOfferNotFoundException() throws Exception {
+        // GIVEN none offer
+
+        // WHEN the endpoint is called
+        final MvcResult mvcResult = mockMvc.perform(get(ALL_OFFERS).characterEncoding("utf-8"))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        // THEN a status 204 (NO CONTENT) should be returned
+        final String content = new String(mvcResult
+                .getResponse().getContentAsByteArray());
+
+        ErrorResponse result = objectMapper.readValue(content,ErrorResponse.class);
+
+        Assertions.assertThat(result.getCode()).isEqualTo(204);
+        Assertions.assertThat(result.getMessage()).isEqualTo("No data found.");
+        Assertions.assertThat(result.getStatus().getReasonPhrase()).isEqualTo("No Content");
     }
 
 }

@@ -60,6 +60,26 @@ public class OfferManagement {
     }
 
     /**
+     * Method responsible for get the offers.
+     * In case of database outage it should return OfferErrorException.
+     * In case of data not found it should return OfferNotFoundException.
+     *
+     * @return list of all offers, including the expired ones.
+     */
+    public List<Offer> getOffers() {
+        try {
+            final List<Offer> offers = repository.findAll();
+            if(offers.isEmpty())
+                throw new OfferNotFoundException("No data found.");
+            return offers;
+        } catch (OfferNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OfferErrorException(String.format("The offer could not be found. [%s]", e.getMessage()));
+        }
+    }
+
+    /**
      * Method responsible for cancel Offer and return the proper kind of exception.
      * for business exceptions is OfferNotFoundException and technical exceptions is OfferErrorException.
      * @param id

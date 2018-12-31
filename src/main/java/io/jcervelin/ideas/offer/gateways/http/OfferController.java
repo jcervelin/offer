@@ -40,6 +40,17 @@ public class OfferController {
     }
 
     /**
+     * This method is responsible for provide the list of
+     * all offers, including the expired ones.
+     * @return all offers.
+     */
+    @GetMapping("/all")
+    @ApiOperation("Get list of the non expired offers")
+    public ResponseEntity<List<Offer>> getOffers() {
+        return new ResponseEntity<>(offerManagement.getOffers(), HttpStatus.OK);
+    }
+
+    /**
      * This method is responsible for provide save a valid
      * offer. It's considered a valid offer if it has a name
      * and startOffer date.
@@ -59,7 +70,8 @@ public class OfferController {
      * @return the offer saved with it's new id created automatically.
      */
     // If required, in the future it can be replaced by delete
-    // or a job must be created to erase the old data and save disc.
+    // or a job must be created to erase the old data and save disc
+    // or even used to generate reports.
     @PutMapping
     @ApiOperation("Cancel a valid offer by id.")
     public ResponseEntity<Offer> cancelOffer(@RequestBody final String id) {

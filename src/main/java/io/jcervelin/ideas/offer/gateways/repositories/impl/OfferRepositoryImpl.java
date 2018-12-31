@@ -26,6 +26,11 @@ public class OfferRepositoryImpl implements OfferRepository {
         return repository.findValidOffers(localDate);
     }
 
+    @Override
+    public List<Offer> findAll() {
+        return repository.findAll();
+    }
+
     /**
      * Method responsible for cancel Offer updating the endOffer to LocalDate.now() - 1 day
      * @param id
