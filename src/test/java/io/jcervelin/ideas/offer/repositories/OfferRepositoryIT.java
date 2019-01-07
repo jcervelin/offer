@@ -3,7 +3,6 @@ package io.jcervelin.ideas.offer.repositories;
 import io.jcervelin.ideas.offer.OfferApplication;
 import io.jcervelin.ideas.offer.gateways.repositories.OfferRepository;
 import io.jcervelin.ideas.offer.models.Offer;
-import io.jcervelin.ideas.offer.models.exceptions.OfferNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -15,9 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static br.com.six2six.fixturefactory.Fixture.from;
 import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
@@ -116,24 +113,23 @@ public class OfferRepositoryIT {
     public void cancelOfferShouldWork() {
         // GIVEN a valid offer, it should be cancelled
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
-        final LocalDate now = LocalDate.now();
         final Offer offerWithId = target.save(ivoryPianoValid);
-        final Optional<Offer> offerOpt = target.cancelOfferById(offerWithId.getId());
+        target.cancelOfferById(ivoryPianoValid.getId());
+        Offer byId = mongoTemplate.findById(offerWithId.getId(), Offer.class);
+        Assertions.assertThat(byId).isNull();
 
-        // WHEN the method cancelOffer is called the return should
-        // be the same offer with the attribute endOffer = today - 1 day
-        final Offer offerCancelled = offerOpt.filter(offer -> offer.getEndOffer().isEqual(now.minusDays(1)))
-                .orElseThrow(() -> new OfferNotFoundException("No data found."));
-        Assertions.assertThat(offerCancelled).isNotNull();
+        // WHEN the method cancelOffer is called the offer should be erased from the database
+        Assertions.assertThat(byId).isNull();
     }
 
-    @Test(expected = RuntimeException.class)
-    public void cancelOfferShouldReturnIllegalArgumentExceptionWhenNullIdIsGiven() {
+    @Test
+    public void cancelOfferShouldReturnFalse() {
         // GIVEN a valid offer, it should be cancelled
-        target.cancelOfferById(null);
+        boolean result = target.cancelOfferById(null);
 
         // WHEN the method cancelOffer is called with a null id the return should
-        // some kind of RuntimeException
+        // be false
+        Assertions.assertThat(result).isFalse();
     }
 
     @Test
@@ -141,8 +137,9 @@ public class OfferRepositoryIT {
         // GIVEN a valid offer, it should be cancelled
         final Offer ivoryPianoValid = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         ivoryPianoValid.setId(MOCK_ID);
-        final Optional<Offer> offer = target.cancelOfferById(ivoryPianoValid.getId());
-        Assertions.assertThat(offer).isEmpty();
+        target.cancelOfferById(ivoryPianoValid.getId());
+        Offer byId = mongoTemplate.findById(ivoryPianoValid.getId(), Offer.class);
+        Assertions.assertThat(byId).isNull();
 
         // WHEN the method cancelOffer is called
         // the return should be empty
@@ -176,8 +173,5 @@ public class OfferRepositoryIT {
 
         Assertions.assertThat(result.size()).isEqualTo(0);
     }
-
-
-
 
 }

@@ -64,17 +64,13 @@ public class OfferController {
 
     /**
      * This method is responsible for provide cancel an offer.
-     * The offer is not deleted from the database. It's only expired.
-     * The endOffer date is replaced by yesterday. That's why the http
-     * method is put instead of delete.
-     * @return the offer saved with it's new id created automatically.
+     * The offer is deleted from the database.
+     * @return a Text message Removed with status 200.
      */
-    // If required, in the future it can be replaced by delete
-    // or a job must be created to erase the old data and save disc
-    // or even used to generate reports.
-    @PutMapping("{id}")
+    @DeleteMapping("{id}")
     @ApiOperation("Cancel a valid offer by id.")
-    public ResponseEntity<Offer> cancelOffer(@PathVariable final String id) {
-        return new ResponseEntity<>(offerManagement.cancelOffer(id), HttpStatus.OK);
+    public ResponseEntity<String> cancelOffer(@PathVariable final String id) {
+        offerManagement.cancelOffer(id);
+        return new ResponseEntity<>("Removed", HttpStatus.OK);
     }
 }

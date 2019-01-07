@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.time.LocalDate.now;
 
@@ -80,15 +79,14 @@ public class OfferManagement {
     }
 
     /**
-     * Method responsible for cancel Offer and return the proper kind of exception.
+     * Method responsible for canceling an Offer and return the proper kind of exception.
      * for business exceptions is OfferNotFoundException and technical exceptions is OfferErrorException.
      * @param id
-     * @return Returns the offer canceled with the endDate = yesterday.
      */
-    public Offer cancelOffer (final String id) {
+    public void cancelOffer (final String id) {
         try {
-            final Optional<Offer> offerCanceled = repository.cancelOfferById(id);
-            return offerCanceled.orElseThrow(() -> new OfferNotFoundException("No data found."));
+            if (!repository.cancelOfferById(id))
+                throw new OfferNotFoundException("No data found.");
         } catch (OfferNotFoundException e) {
             throw e;
         } catch (Exception e) {

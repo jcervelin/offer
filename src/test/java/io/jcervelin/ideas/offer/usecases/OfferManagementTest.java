@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static br.com.six2six.fixturefactory.Fixture.from;
 import static br.com.six2six.fixturefactory.loader.FixtureFactoryLoader.loadTemplates;
@@ -134,18 +133,15 @@ public class OfferManagementTest {
     public void cancelOfferShouldReturnCancelledOffer() {
 
         // GIVEN an expired order
-        final Offer ivoryPianoExpired = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_EXPIRED);
-
-        doReturn(Optional.of(ivoryPianoExpired)).when(offerRepository).cancelOfferById(objectIdCaptor.capture());
+        doReturn(true).when(offerRepository).cancelOfferById(objectIdCaptor.capture());
 
         // WHEN the method cancelOffer is called it should return a cancelled order
-        final Offer result = target.cancelOffer(MOCK_ID);
+        target.cancelOffer(MOCK_ID);
 
         // THEN the ObjectId created should be the same
         Assertions.assertThat(objectIdCaptor.getValue()).isEqualTo(MOCK_ID);
 
-        // AND the expired date should not be altered by this method.
-        Assertions.assertThat(result.getEndOffer()).isEqualTo(ivoryPianoExpired.getEndOffer());
+        verify(offerRepository,only()).cancelOfferById(MOCK_ID);
     }
 
     @Test
@@ -169,7 +165,7 @@ public class OfferManagementTest {
     public void cancelOfferShouldReturnOfferNotFoundWhenIdIsNotFound() {
         // GIVEN an random id
 
-        doReturn(Optional.empty())
+        doReturn(false)
                 .when(offerRepository).cancelOfferById(MOCK_ID);
 
         thrown.expect(OfferNotFoundException.class);

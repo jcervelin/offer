@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static br.com.six2six.fixturefactory.Fixture.from;
@@ -250,13 +249,13 @@ public class OfferControllerIT {
     }
 
     @Test
-    public void cancelOffersShouldUpdateTheEndDate() throws Exception {
+    public void cancelOffersShouldRemoveTheOffer() throws Exception {
         // GIVEN 1 valid offer saved
         final Offer ivoryPiano = from(Offer.class).gimme(IVORY_PIANO_FROM_100_TO_70_VALID);
         final Offer savedWithId = mongoTemplate.save(ivoryPiano);
 
         // WHEN the endpoint is called
-        final MvcResult mvcResult = mockMvc.perform(put(ENDPOINT + "/" + savedWithId.getId())
+        final MvcResult mvcResult = mockMvc.perform(delete(ENDPOINT + "/" + savedWithId.getId())
                 .characterEncoding("utf-8"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -265,11 +264,7 @@ public class OfferControllerIT {
         final String content = mvcResult
                 .getResponse().getContentAsString();
 
-        final Offer result = objectMapper.readValue(content, Offer.class);
-
-        Assertions.assertThat(result).isEqualToIgnoringGivenFields(ivoryPiano,"id","endOffer");
-        Assertions.assertThat(result.getId()).isNotNull();
-        Assertions.assertThat(result.getEndOffer()).isEqualTo(LocalDate.now().minusDays(1));
+        Assertions.assertThat(content).isEqualTo("Removed");
     }
 
     @Test
